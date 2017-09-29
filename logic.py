@@ -9,12 +9,24 @@ def get_attr():
             return set((a, cmds.attributeQuery(b, n=a, ln=True)) for a in objs for b in attrs if cmds.attributeQuery(b, n=a, ex=True))
     return []
 
+def run_range(in_frame, out_frame):
+    curr_time = cmds.currentTime(q=True)
+    for frame in range(in_frame, out_frame):
+        cmds.currentTime(frame)
+        yield frame
+    cmds.currentTime(curr_time)
+
 def sample_at_range(in_frame, out_frame, attributes):
     """ Sample attributes at each frame """
     keys = collections.defaultdict(list)
-    curr_time = cmds.currentTime(q=True)
-    for frame in range(in_frame, out_frame):
+    for frame in run_range(in_frame. out_frame):
         for attr in attributes:
             keys[attr].append((frame, cmds.getAttr(attr)))
-    cmds.currentTime(curr_time)
     return keys
+
+def apply_at_range(in_frame, out_frame, attributes):
+    """ Apply keyframes at each frame """
+    for frame in run_range(in_frame, out_frame):
+        for attr in attributes:
+            for key in attributes[attr]:
+                cmds.setAttr(attr, attributes[attr][1])
