@@ -29,4 +29,12 @@ def apply_at_range(in_frame, out_frame, attributes):
     for frame in run_range(in_frame, out_frame):
         for attr in attributes:
             for key in attributes[attr]:
-                cmds.setAttr(attr, attributes[attr][1])
+                cmds.setAttr(attr, key[1])
+
+def apply_operation(attr1, attr2, func):
+    """ apply operation to attributes """
+    new_attr = collections.defaultdict(list)
+    for at1, at2 in zip(attr1, attr2):
+        for k1, k2 in zip(at1, at2):
+            new_attr[at2].append(k2, func(k1[1], k2[1]))
+    return new_attr
