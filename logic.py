@@ -9,16 +9,21 @@ def get_attr():
     return []
 
 def apply_operation(in_frame, out_frame, attr1, attr2, out_attr, func):
+    autokey = cmds.autoKeyframe(state=True, q=True)
     err = cmds.undoInfo(openChunk=True)
     try:
+        cmds.autoKeyframe(state=False)
         for frame in range(in_frame, out_frame):
-            cmds.setAttr(out_attr, func(
-                cmds.getAttr(attr1),
-                cmds.getAttr(attr2)))
+            cmds.setKeyframe(
+                out_attr,
+                t=frame,
+                v=func(
+                    cmds.getAttr(attr1, t=frame),
+                    cmds.getAttr(attr2, t=frame)))
     except Exception as err:
         pass
     finally:
-        cmds.select(clear=True)
+        cmds.autoKeyframe(state=autokey)
         cmds.undoInfo(closeChunk=True)
         if err:
             cmds.undo()
