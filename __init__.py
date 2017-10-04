@@ -5,7 +5,9 @@ import operator
 
 operations = {
     "+": operator.add,
-    "-": operator.sub
+    "-": operator.sub,
+    "x": operator.mul,
+    "/": operator.truediv
     }
 
 class Main(object):
@@ -26,17 +28,22 @@ class Main(object):
             return cmds.textFieldButtonGrp(gui, e=True, tx=attr)
 
     def calculate(s, *_):
+        # Collect inputs
         input1 = cmds.textFieldButtonGrp(s.input1, q=True, tx=True)
         input2 = cmds.textFieldButtonGrp(s.input2, q=True, tx=True)
         output = cmds.textFieldButtonGrp(s.output, q=True, tx=True)
-        op = operations[cmds.optionMenu(s.op, q=True, v=True)]
         if not input1 or not input2 or not output:
             raise RuntimeError("Not all fields filled!")
         if len(set((input1, input2, output))) != 3:
             raise RuntimeError("All fields must be different!")
 
-        print op
+        # What are we doing?
+        op = operations[cmds.optionMenu(s.op, q=True, v=True)]
+        start = cmds.playbackOptions(q=True, min=True)
+        end = cmds.playbackOptions(q=True, max=True)
 
+        # Do it!
+        logic.apply_operation(start, end, input1, input2, output, op)
 
 
 if __name__ == '__main__':

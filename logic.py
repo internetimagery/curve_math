@@ -14,15 +14,18 @@ def apply_operation(in_frame, out_frame, attr1, attr2, out_attr, func):
     err = cmds.undoInfo(openChunk=True)
     try:
         cmds.autoKeyframe(state=False)
-        for frame in range(in_frame, out_frame):
-            cmds.setKeyframe(
-                out_attr,
-                t=frame,
-                v=func(
-                    cmds.getAttr(attr1, t=frame),
-                    cmds.getAttr(attr2, t=frame)))
+        # Collect data:
+        attr1_data = []
+        attr2_data = []
+        for frame in range(int(in_frame), int(out_frame) + 1):
+            attr1_data.append(cmds.getAttr(attr1, t=frame))
+            attr2_data.append(cmds.getAttr(attr2, t=frame))
+        for i, (at1, at2) in enumerate(zip(attr1_data, attr2_data)):
+            frame = i + in_frame
+            ans = func(at1, at2)
+            cmds.setKeyframe(out_attr, t=frame, v=ans)
     except Exception as err:
-        pass
+        raise
     finally:
         cmds.autoKeyframe(state=autokey)
         cmds.undoInfo(closeChunk=True)
