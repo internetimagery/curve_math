@@ -1,3 +1,4 @@
+import maya.cmds as cmds
 
 def get_attr():
     """ Get selected attributes, Return an iterable"""
